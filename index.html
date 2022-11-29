@@ -1,0 +1,700 @@
+<head>
+  <title>arRPC</title>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+
+  <meta itemprop="name" content="arRPC">
+  <meta property="og:title" content="arRPC">
+  <meta itemprop="description" content="arRPC is an open implementation of Discord's Rich Presence; allowing RPC in web, custom clients, and more!">
+  <meta property="og:description" content="arRPC is an open implementation of Discord's Rich Presence; allowing RPC in web, custom clients, and more!">
+  <meta property="og:type" content="website">
+
+  <style>
+    @font-face {
+      font-family: Whitney;
+      font-style: normal;
+      font-weight: 400;
+      src: url(/whitney.woff2) format("woff2")
+    }
+
+    @font-face {
+      font-family: Ginto;
+      font-style: normal;
+      font-weight: 500;
+      src: url(/ginto.woff2) format("woff2")
+    }
+
+    :root {
+      --font-normal: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --font-header: Ginto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --font-mono: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+
+      --header-primary: #ffffff;
+      --header-secondary: #b9bbbe;
+
+      /* --text-normal: #dcddde;
+      --text-muted: #a3a6aa; */
+
+      --text-normal: #ffffff;
+      --text-muted: #dcddde;
+
+      --accent: #5865f2;
+      --accent-light: #717beb;
+      --accent-dark: #4550cf;
+
+      --background-primary: #101418;
+      --background-secondary: #202428;
+      --background-header: 0, 4, 8;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--background-primary);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-weight: 500;
+      font-family: var(--font-header);
+      font-size: 32px;
+
+      color: var(--header-primary);
+
+      margin: 0;
+    }
+
+    h2 {
+      font-weight: 500;
+      font-family: var(--font-header);
+      font-size: 28px;
+
+      color: var(--header-primary);
+
+      margin-top: 60px;
+      margin-bottom: 8px;
+    }
+
+    header {
+      width: 100%;
+      height: 72px;
+
+      padding: 12px 24px;
+
+      background: rgba(var(--background-header), 0.6);
+      box-shadow: 0 8px 16px rgb(0 0 0 / 24%);
+      backdrop-filter: blur(2px) saturate(0.5);
+
+      display: flex;
+      align-items: baseline;
+
+      position: sticky;
+      top: 0;
+    }
+
+    header > h1 {
+      color: var(--accent-light);
+    }
+
+    header code {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      color: var(--text-muted);
+    }
+
+    header > div {
+      flex-grow: 1;
+      margin-left: 4vw;
+
+      display: flex;
+      gap: 50px;
+
+      /* justify-content: flex-end; */
+    }
+
+    header a {
+      color: var(--text-normal);
+      text-decoration: none;
+
+      font-weight: 500;
+      font-family: var(--font-header);
+      font-size: 24px;
+
+      transition: .5s color;
+    }
+
+    a:after {
+      content: '';
+      display: block;
+      margin: auto;
+      margin-top: 2px;
+      height: 2px;
+      width: 0px;
+      background: transparent;
+      transition: width .5s ease, background-color .5s ease;
+    }
+
+    header a:hover {
+      color: var(--header-primary);
+    }
+
+    a:hover:after {
+      width: 100%;
+      background: var(--accent-light);
+    }
+
+    a:active:after {
+      width: 100%;
+      background: var(--accent);
+    }
+
+    article {
+      padding: 20px 60px;
+      width: 100%;
+      max-width: 2000px;
+      margin: auto;
+    }
+
+    .tagline {
+    }
+
+    p {
+      font-size: 24px;
+      font-family: var(--font-normal);
+      color: var(--text-muted);
+
+      margin-bottom: 40px;
+      margin-top: 16px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 80px;
+
+      margin-top: 12px;
+      margin-bottom: 60px;
+    }
+
+    .columns {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cards > div {
+      background: var(--background-secondary);
+      box-shadow: 0 8px 16px rgb(0 0 0 / 24%);
+      padding: 16px;
+
+      display: flex;
+
+      border-radius: 8px;
+
+      flex-direction: column;
+    }
+
+    .cards > div svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .cards > div svg.stroke path {
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 6px;
+    }
+
+    .cards > div > h1 {
+      font-family: var(--font-header);
+      color: var(--header-primary);
+
+      display: flex;
+      gap: 10px;
+
+      align-items: center;
+    }
+
+    .cards > div > p {
+      font-family: var(--font-normal);
+      color: var(--text-normal);
+      font-size: 22px;
+
+      margin-top: 12px;
+      margin-bottom: 10px;
+    }
+
+    .cards > span {
+      color: var(--text-muted);
+      font-family: var(--font-header);
+      font-size: 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+    }
+
+    .stats > h2 {
+      margin: 0;
+      color: var(--text-normal);
+      font-weight: 400;
+
+      display: flex;
+      align-items: center;
+    }
+
+    .stats > h2:not(:last-child) {
+      margin-bottom: 40px;
+    }
+
+    .stats span {
+      font-weight: 600;
+      color: var(--accent-light);
+    }
+
+    .stats svg {
+      width: 32px;
+      height: 32px;
+      margin-right: 12px;
+    }
+
+    header .stats svg {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+
+    .stats [id^="stat_"] {
+      margin: 0 8px;
+    }
+
+    /* .stats::before {
+      content: '';
+      width: 80%;
+      height: 2px;
+      background: var(--background-secondary);
+      margin: auto;
+
+      position: relative;
+      top: -4vw;
+    }
+
+    article > :nth-last-child(2) {
+      margin-bottom: 4vw;
+    } */
+
+    a {
+      color: var(--accent-light);
+      text-decoration: none;
+      font-weight: 600;
+
+      display: inline-block;
+    }
+
+    ::-webkit-scrollbar {
+      width: 16px;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #000408;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: #303438;
+    }
+
+    ::-webkit-scrollbar-thumb, ::-webkit-scrollbar-track {
+      border: 4px solid transparent;
+      background-clip: padding-box;
+      border-radius: 12px;
+    }
+
+    #caps {
+      float: right;
+      font-size: 24px;
+      color: var(--text-muted);
+
+      cursor: pointer;
+      user-select: none;
+    }
+
+    video {
+      width: 80%;
+      display: block;
+      margin: auto;
+
+      background: var(--background-secondary);
+      padding: 8px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgb(0 0 0 / 24%);
+    }
+
+    table {
+      background: #202428;
+      color: var(--header-primary);
+      font-family: var(--font-header);
+
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .compat tr:first-child {
+      background: #101418;
+      font-size: 20px;
+    }
+
+    .compat tr:first-child > td:nth-child(2), .compat tr:first-child > td:nth-child(3) {
+      width: 160px;
+    }
+
+    .compat tr {
+      border: 2px solid var(--header-secondary);
+      font-size: 18px;
+    }
+
+    .compat td {
+      padding: 4px;
+      border: 2px solid black;
+    }
+
+    .compat td:not(:first-child) {
+      text-align: center;
+    }
+
+    td.most {
+      background: #97ca00;
+    }
+
+    td.some {
+      background: #dfb317;
+    }
+
+    td.initial {
+      background: #fe7d37;
+    }
+
+    td.unsupported {
+      background: #e05d44;
+    }
+
+    .index {
+      margin-bottom: 20px;
+    }
+
+    .index td {
+      padding: 4px;
+    }
+
+    .index td:first-child {
+      border-left: 3px solid transparent;
+      padding-left: 10px;
+    }
+
+    .index td:nth-child(2) {
+      width: 70%;
+      color: var(--text-normal);
+    }
+
+    .sandbox-table {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .sandbox-table td {
+      padding: 6px;
+    }
+
+    .sandbox-table td:last-child {
+      text-align: center;
+    }
+
+    .detailed.cards {
+      gap: 60px;
+    }
+
+    .detailed.cards p {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .detailed.cards h2 {
+      font-size: 24px;
+      color: var(--text-normal);
+      margin-top: 10px;
+      margin-bottom: -4px;
+    }
+
+    .detailed.cards p + p {
+      margin-top: 0;
+    }
+
+    ul, ol {
+      margin-top: 0px;
+      margin-bottom: 16px;
+
+      color: var(--text-normal);
+      font-family: var(--font-normal);
+      font-size: 20px;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 80%;
+      color: var(--text-muted);
+    }
+
+    .usage-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .usage-header code {
+      font-size: 16px;
+    }
+
+    .check {
+      border-radius: 50%;
+      background: var(--accent);
+      width: 20px;
+      height: 20px;
+    }
+
+    .check.no {
+      background: none;
+    }
+
+    .tagline {
+      font-size: 38px;
+    }
+
+    .subtag {
+      color: #dcddde;
+      font-size: 24px;
+      margin: 0;
+      margin-top: 4px;
+      margin-bottom: 26px;
+    }
+
+    #install-button {
+	cursor: default !important;
+  z-index: 1;
+}
+
+#install-button ~ div {
+  position: absolute;
+  margin-top: -12px;
+  background: var(--background-secondary) !important;
+  display: flex;
+  flex-flow: column;
+  height: unset;
+
+	z-index: 0;
+
+	box-shadow: inset 0 0 0 2px #404448;
+	border-radius: 6px;
+
+	display: none;
+
+	padding-top: 6px;
+}
+
+#install-button ~ div a {
+	transform: rotateX(90deg);
+
+  font-family: var(--font-header);
+  font-weight: 500;
+  font-size: 22px;
+}
+
+#install-button ~ div a:nth-child(1) {
+	animation: rotateX 300ms 0ms ease-in-out forwards;
+	transform-origin: top center;
+}
+
+#install-button ~ div a:nth-child(2) {
+	animation: rotateX 300ms 60ms ease forwards;
+	transform-origin: top center;
+}
+
+#install-button ~ div a:nth-child(3) {
+	animation: rotateX 300ms 120ms ease forwards;
+	transform-origin: top center;
+}
+
+@keyframes rotateX {
+  0% {
+    transform: rotateX(90deg);
+  }
+  50% {
+    transform: rotateX(20deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+#install-button:hover ~ div, #install-button ~ div:hover {
+	display: flex;
+}
+
+#install-button ~ div a {
+	border-bottom: none;
+	color: var(--text-normal);
+
+  padding: 8px 16px;
+  width: 100%;
+
+	cursor: pointer;
+
+	box-shadow: none !important;
+}
+
+#install-button ~ div a:not(:last-child) {
+  border-bottom: 2px solid #404448;
+}
+
+button {
+  position: relative;
+
+  padding: 16px 32px;
+  background: var(--accent);
+  border-radius: 8px;
+
+  border: 2px solid #000;
+
+  font-size: 28px;
+  font-weight: 500;
+  font-family: var(--font-header);
+}
+
+button:hover {
+  background: var(--accent-light);
+}
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>arRPC</h1>
+
+    <div>
+      <a href="https://github.com/OpenAsar/arRPC">GitHub</a>
+      <a href="https://discord.com/invite/neMncS2">Discord</a>
+    </div>
+
+    <a href="https://github.com/OpenAsar/arRPC/blob/main/changelog.md" class="stats">
+      <h2>
+        <svg width="24" height="24" viewBox="0 0 18 18"><g fill="none" fill-rule="evenodd"><path fill="currentColor" d="M9.99999 1.66675C5.39699 1.66675 1.66666 5.39708 1.66666 10.0001C1.66666 14.6031 5.39699 18.3334 9.99999 18.3334C14.603 18.3334 18.3333 14.6031 18.3333 10.0001C18.3333 5.39708 14.603 1.66675 9.99999 1.66675ZM9.99999 4.66675C10.3685 4.66675 10.6667 4.96493 10.6667 5.33342V9.61475L13.8021 11.4272C14.1211 11.6108 14.2252 12.0145 14.0416 12.3335C13.8581 12.6525 13.4544 12.7567 13.1354 12.5731L9.73937 10.6148C9.71333 10.6043 9.68989 10.5874 9.66646 10.5731C9.46724 10.4572 9.33312 10.2463 9.33312 10.0002V5.3335C9.33312 4.965 9.6315 4.66675 9.99999 4.66675Z"></path></g></svg>
+        <span style="margin-left: 0" id="stat_1">3.0.0</span>
+        <div>was released</div>
+        <span id="stat_2">last week</span>
+      </h2>
+    </a>
+  </header>
+
+  <article>
+    <h1 class="tagline">arRPC is an open implementation of Discord's Rich Presence</h1>
+    <h2 class="subtag">Allowing RPC where previously impossible, like Discord Web and custom clients</h2>
+
+    <p>arRPC is an open-source reimplementation of Discord's Rich Presence (RPC), instead of using Discord's specific (only works with their desktop client) and closed/proprietary local backend. arRPC mimicks Discord's local servers and scanning, allowing apps to talk to it to give you statuses just like desktop!</p>
+
+    <h2>Features</h2>
+    <section class="cards">
+      <div>
+        <h1>
+          <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 19.93C7.05 19.44 4 16.08 4 12C4 11.38 4.08 10.79 4.21 10.21L9 15V16C9 17.1 9.9 18 11 18V19.93ZM17.9 17.39C17.64 16.58 16.9 16 16 16H15V13C15 12.45 14.55 12 14 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.78 20 8.65 20 12C20 14.08 19.2 15.97 17.9 17.39Z"></path></svg>
+          <span>Universal</span>
+        </h1>
+        <p>When integrated, arRPC can work anywhere Discord Web is used! In your browser, some custom clients like ArmCord, and more. Where it isn't, it could still possibly be used, just with a custom integration needed.</p>
+      </div>
+
+      <div>
+        <h1>
+          <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5C5.648 5 1 12 1 12C1 12 5.648 19 12 19C18.352 19 23 12 23 12C23 12 18.352 5 12 5ZM12 16C9.791 16 8 14.21 8 12C8 9.79 9.791 8 12 8C14.209 8 16 9.79 16 12C16 14.21 14.209 16 12 16Z"></path><path fill="currentColor" d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"></path></svg>
+          <span>Open</span>
+        </h1>
+        <p>arRPC is open-source, meaning you can look inside it, to verify what it's doing. It is also an open standard which can be used across clients, mods, and plugins.</p>
+      </div>
+
+      <div>
+        <h1>
+          <svg width="24" height="24" viewBox="0 0 20 23"><g fill="none" fill-rule="evenodd"><path fill="currentColor" d="M19.487 5.126L10.487 0.126C10.184 -0.042 9.81798 -0.042 9.51498 0.126L0.514977 5.126C0.197977 5.302 0.000976562 5.636 0.000976562 5.999C0.000976562 6.693 0.114977 22.999 10.001 22.999C19.887 22.999 20.001 6.693 20.001 5.999C20.001 5.636 19.804 5.302 19.487 5.126ZM10.001 5.999C11.382 5.999 12.501 7.118 12.501 8.499C12.501 9.88 11.382 10.999 10.001 10.999C8.61998 10.999 7.50098 9.88 7.50098 8.499C7.50098 7.118 8.61998 5.999 10.001 5.999ZM6.25098 16C6.25098 13.699 7.69998 12.25 10.001 12.25C12.302 12.25 13.751 13.699 13.751 16H6.25098Z"></path></g></svg>
+          <span>Private</span>
+        </h1>
+        <p>Instead of relying on Discord's proprietary native libraries, arRPC is independent and made in easy-to-read JavaScript. Discord won't see any of your processes, instead arRPC handles it and only passes on activity info.</p>
+      </div>
+    </section>
+
+    <h2>Supported</h2>
+    <section class="cards">
+      <div>
+        <h1>
+          <svg class="check" aria-hidden="true" role="img" width="18" height="18" viewBox="0 0 24 24"><path fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd" d="M8.99991 16.17L4.82991 12L3.40991 13.41L8.99991 19L20.9999 7.00003L19.5899 5.59003L8.99991 16.17Z"></path></svg>
+          <span>Rich Presence</span>
+        </h1>
+        <p>Shows activity given by the app</p>
+      </div>
+
+      <div>
+        <h1>
+          <svg class="check" aria-hidden="true" role="img" width="18" height="18" viewBox="0 0 24 24"><path fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd" d="M8.99991 16.17L4.82991 12L3.40991 13.41L8.99991 19L20.9999 7.00003L19.5899 5.59003L8.99991 16.17Z"></path></svg>
+          <span>Process Scanning</span>
+        </h1>
+        <p>Scans running apps and sets as activity if known</p>
+      </div>
+
+      <div>
+        <h1>
+          <svg class="check no" aria-hidden="true" role="img" width="20" height="20" viewBox="0 0 14 14"><path fill="hsl(359, 82.6%, 59.4%)" d="M7.02799 0.333252C3.346 0.333252 0.361328 3.31792 0.361328 6.99992C0.361328 10.6819 3.346 13.6666 7.02799 13.6666C10.71 13.6666 13.6947 10.6819 13.6947 6.99992C13.6947 3.31792 10.7093 0.333252 7.02799 0.333252ZM10.166 9.19525L9.22333 10.1379L7.02799 7.94325L4.83266 10.1379L3.89 9.19525L6.08466 6.99992L3.88933 4.80459L4.832 3.86259L7.02733 6.05792L9.22266 3.86259L10.1653 4.80459L7.97066 6.99992L10.166 9.19525Z"></path></svg>
+          <span>Party</span>
+        </h1>
+        <p>Joining or spectating games</p>
+      </div>
+    </section>
+  </article>
+
+  <script> (async () => {
+    const prettyAgo = (timestamp) => {
+      const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'week', seconds: 604800 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 },
+        { label: 'second', seconds: 1 }
+      ];
+
+      const seconds = Math.floor((Date.now() - timestamp) / 1000);
+      const interval = intervals.find(i => i.seconds <= seconds);
+      const count = Math.floor(seconds / interval.seconds);
+
+      const rtf = new Intl.RelativeTimeFormat("en", {
+        localeMatcher: 'best fit',
+        numeric: 'auto',
+        style: 'long'
+      });
+
+      return rtf.format(count * -1, interval.label);
+    };
+
+    stat_1.textContent = '3.0.0';
+    stat_2.textContent = prettyAgo(new Date('2022-11-26'));
+  })();</script>
+</body>
